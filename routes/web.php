@@ -16,10 +16,7 @@ use App\Models\City;
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
 
-Route::any('/countries', [HomeController::class, 'index']);
-Route::post('api/fetch-states', [HomeController::class, 'fetchState']);
-Route::post('api/fetch-cities', [HomeController::class, 'fetchCity']);
+Route::get('/', [HomeController::class, 'index']);
+Route::post('getState', [HomeController::class, 'getState'] );
+Route::post('getCity', [HomeController::class, 'getCity'] );

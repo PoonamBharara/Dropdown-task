@@ -22,41 +22,71 @@
     </head>
     <body class="antialiased">
         
-        <form action="{{ route('/getData', $country['id])}}" method="post">
-       
-            <select id="country-dd">
-        
-                @foreach($countries as $country)
-                    <option style="list-style:none; padding:10px 20px;  background-color:grey; color:white;" onclick="showData();" value="{{$country['id']}}">{{$country['name']}}</option>
-                    <br>         
-                @endforeach
+        <select id="country">
+            <option value="">Select Country</option>
+            <!-- data is array, country is key of the array -->
+            @foreach($country as $list) 
+            <option value="{{$list->id}}">{{$list->name}}</option>
 
-            
-            </select>
-        </form>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+            @endforeach
+        </select>
+
+        <select id="state">
+            <option value="">Select state</option>
+        </select>
+
+        <select id="city">
+            <option value="">Select city</option>
+        </select>
+
+        <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+
         <script>
-
-            function showData(){
-                $('#select01').change(function() {
-                $.post('/getData', {id: $('#select01').val()}, function(data) {
-                    if (data.return) {
-                    $.each(data.items, function(key, val) { //populate data
-                        $('#admin table tbody').append('<tr>'+
-                        '<td>'+(key+1)+'</td>' + //No
-                        '<td>'+val.type+'</td>' + //Type
-                        '<td>'+val.status+'</td>'+ //Transfer/Receive
-                        '<td>'+val.withdrawal+'</td>'+ //Withdrawal
-                        '<td>'+val.remarks+'</td>'+ //Remarks
-                        '<td>'+val.charges+'</td>' + //Charges
-                        '<td>'+val.date+'</td>'+ //Date
-                        '</tr>');
+            
+        $('#country').on('change', function() {
+        var state_id = this.value;
+        // alert(state_id);
+        $.ajax({
+            //url function is used cause laravel
+            url:"{{url('getState')}}",
+            type: "POST",
+            data: {
+            state_id: state_id,
+            _token: '{{csrf_token()}}' 
+            },
+            dataType : 'json',
+            success: function(result){
+          console.log(result);
+            $('#state').html('<option value="">Select state</option>'); 
+                    $.each(result,function(key,value){
+                    $("#state").append('<option value="'+value.id+'">'+value.name+'</option>');
                     });
-                    }
-                }, 'json');
+                }
+            });    
+    });
+
+    $('#state').on('change', function() {
+        var city_id = this.value;    
+        $.ajax({
+            url:"{{url('getCity')}}",
+            type: "POST",
+            data: {
+            city_id: city_id,
+            _token: '{{csrf_token()}}' 
+            },
+            dataType : 'json',
+            success: function(result){
+                console.log(result);
+                $('#city').html('<option value="">Select City</option>'); 
+                $.each(result,function(key,value){
+                $("#city").append('<option value="'+value.id+'">'+value.name+'</option>');
                 });
             }
-        </script>
+        });
+    });
+
+</script>
+
 
     </body>
 </html>
